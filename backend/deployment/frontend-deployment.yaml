@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: europe-west3-docker.pkg.dev/aianalyst-redflaggers/ai-analyst-repo/frontend:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: GOOGLE_CLOUD_PROJECT
+              value: "aianalyst-redflaggers"
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /var/secrets/google/key.json
+            - name: REACT_APP_API_URL
+              value: "http://backend-svc:8080/"
+          volumeMounts:
+            - name: gcp-credentials
+              mountPath: /var/secrets/google
+              readOnly: true
+      volumes:
+        - name: gcp-credentials
+          secret:
+            secretName: gcp-credentials
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-svc
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 34.40.32.78
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+

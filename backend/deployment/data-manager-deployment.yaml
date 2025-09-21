@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-manager
+  template:
+    metadata:
+      labels:
+        app: data-manager
+    spec:
+      containers:
+        - name: data-manager
+          image: europe-west3-docker.pkg.dev/aianalyst-redflaggers/ai-analyst-repo/data-manager:latest
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /var/secrets/google/key.json
+          volumeMounts:
+            - name: gcp-credentials
+              mountPath: /var/secrets/google
+              readOnly: true
+      volumes:
+        - name: gcp-credentials
+          secret:
+            secretName: gcp-credentials
+
