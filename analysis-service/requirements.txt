@@ -1,0 +1,8 @@
+google-cloud-pubsub
+google-cloud-aiplatform
+google-cloud-storage
+google-genai
+google.adk
+python-dotenv
+vertexai
+pypandoc
